@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Middleware;
 
@@ -14,6 +14,6 @@ class SetApiLocale
             App::setLocale('ja_api');
         }
 
-        return $next;
+        return $next($request);
     }
 }

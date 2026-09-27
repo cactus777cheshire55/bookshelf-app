@@ -9,7 +9,7 @@ class GenreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
     public function rules(): array
@@ -22,7 +22,7 @@ class GenreRequest extends FormRequest
                 'string',
                 'max:30',
 
-                $genreId 
+                $genreId
                     ? Rule::unique('genres', 'name')->ignore($genreId)
                     : 'unique:genres,name',
             ],
@@ -33,8 +33,8 @@ class GenreRequest extends FormRequest
     {
         return [
             'name.required' => 'ジャンル名を入力してください',
-            'name.max'      => 'ジャンル名は30文字以内で入力してください',
-            'name.unique'   => 'このジャンル名は既に登録されています',
+            'name.max' => 'ジャンル名は30文字以内で入力してください',
+            'name.unique' => 'このジャンル名は既に登録されています',
         ];
     }
 }

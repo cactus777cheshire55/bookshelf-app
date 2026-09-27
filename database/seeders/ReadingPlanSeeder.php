@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Seeders;
 
@@ -16,7 +16,9 @@ class ReadingPlanSeeder extends Seeder
         $suzuki = User::where('email', 'suzuki@example.com')->first();
         $books = Book::all();
 
-        if (!$yamada || !$suzuki || $books->count() < 6) return;
+        if (! $yamada || ! $suzuki || $books->count() < 6) {
+            return;
+        }
 
         $today = Carbon::today();
 

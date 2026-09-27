@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Seeders;
 
@@ -15,7 +15,9 @@ class ReviewSeeder extends Seeder
         $users = User::all();
         $books = Book::all();
 
-        if ($users->isEmpty() || $books->isEmpty()) return;
+        if ($users->isEmpty() || $books->isEmpty()) {
+            return;
+        }
 
         // 評価別の日本語コメントテンプレート
         $commentsByRating = [
@@ -39,7 +41,7 @@ class ReviewSeeder extends Seeder
                 Review::create([
                     'user_id' => $user->id,
                     'book_id' => $book->id,
-                    'rating'  => $rating,
+                    'rating' => $rating,
                     'comment' => $comment,
                 ]);
             }

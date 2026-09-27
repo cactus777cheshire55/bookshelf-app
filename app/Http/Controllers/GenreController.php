@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\GenreRequest; 
+use App\Http\Requests\GenreRequest;
 use App\Models\Genre;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -36,7 +36,7 @@ class GenreController extends Controller
         $books = $genre->books()
             ->withAvg('reviews', 'rating')
             ->latest()
-            ->paginate(10); 
+            ->paginate(10);
 
         return view('genres.show', compact('genre', 'books'));
     }

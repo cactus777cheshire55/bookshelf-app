@@ -1,14 +1,17 @@
-<?php 
+<?php
 
 namespace App\Models;
 
+use App\Enums\ReadingPlanStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReadingPlan extends Model
 {
     const STATUS_UNREAD = 'unread';
+
     const STATUS_READING = 'reading';
+
     const STATUS_COMPLETED = 'completed';
 
     protected $fillable = [
@@ -22,7 +25,7 @@ class ReadingPlan extends Model
     protected $casts = [
         'target_date' => 'date',
         'completed_at' => 'date',
-        'status' => \App\Enums\ReadingPlanStatus::class,
+        'status' => ReadingPlanStatus::class,
     ];
 
     public function user(): BelongsTo

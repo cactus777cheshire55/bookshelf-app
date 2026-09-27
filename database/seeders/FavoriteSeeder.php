@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Seeders;
 
@@ -13,7 +13,9 @@ class FavoriteSeeder extends Seeder
         $users = User::all();
         $books = Book::all();
 
-        if ($users->isEmpty() || $books->isEmpty()) return;
+        if ($users->isEmpty() || $books->isEmpty()) {
+            return;
+        }
 
         foreach ($users as $user) {
             // 各ユーザーに3〜5冊のお気に入りをランダム設定

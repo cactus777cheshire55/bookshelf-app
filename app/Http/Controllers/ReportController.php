@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ReadingPlan; 
+use App\Models\ReadingPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -23,7 +23,7 @@ class ReportController extends Controller
         $ratingDistribution = [
             5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0,
         ];
-        
+
         $rawDistribution = $user->reviews()
             ->select('rating', DB::raw('count(*) as count'))
             ->groupBy('rating')
@@ -53,10 +53,10 @@ class ReportController extends Controller
             ->join('genres', 'book_genre.genre_id', '=', 'genres.id')
             ->where('reviews.user_id', $user->id)
             ->select(
-                'genres.id', 
-                'genres.name', 
+                'genres.id',
+                'genres.name',
                 DB::raw('count(*) as count'),
-                DB::raw('avg(reviews.rating) as average_rating') 
+                DB::raw('avg(reviews.rating) as average_rating')
             )
             ->groupBy('genres.id', 'genres.name')
             ->orderByDesc('count')
@@ -67,7 +67,7 @@ class ReportController extends Controller
                     'id' => $genre->id,
                     'name' => $genre->name,
                     'count' => $genre->count,
-                    'average_rating' => $genre->average_rating, 
+                    'average_rating' => $genre->average_rating,
                 ];
             });
 
@@ -79,7 +79,7 @@ class ReportController extends Controller
             ],
             'rating_distribution' => collect($ratingDistribution),
             'top_rated_books' => $topRatedBooks,
-            'genre_ratings' => $preferredGenres, 
+            'genre_ratings' => $preferredGenres,
         ];
 
         $recentCompletedPlans = $user->readingPlans()

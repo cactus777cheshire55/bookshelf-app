@@ -13,41 +13,42 @@ use Illuminate\View\View;
 class ReadingPlanController extends Controller
 {
     public function index(Request $request): View
-        {
-            $user = $request->user();
+    {
+        $user = $request->user();
 
-            $user->readingPlans()
+        $user->readingPlans()
             ->where('status', ReadingPlanStatus::InProgress)
             ->where('target_date', '<', Carbon::today())
             ->update(['status' => ReadingPlanStatus::Expired]);
 
-            $query = $request->user()
-                ->readingPlans()
-                ->with('book');
+        $query = $request->user()
+            ->readingPlans()
+            ->with('book');
 
-            $status = $request->input('status');
-            if ($status) {
-                $query->where('status', $status);
-            }
+        $status = $request->input('status');
+        if ($status) {
+            $query->where('status', $status);
+        }
 
-            $readingPlans = $query->orderBy('target_date', 'asc')->get();
+        $readingPlans = $query->orderBy('target_date', 'asc')->get();
 
-            return view('reading-plans.index', [
-                'readingPlans' => $readingPlans,
-                'currentStatus' => $status,
-            ]);
+        return view('reading-plans.index', [
+            'readingPlans' => $readingPlans,
+            'currentStatus' => $status,
+        ]);
     }
 
     public function create(): View
     {
         $books = Book::orderBy('title', 'asc')->get();
+
         return view('reading-plans.create', compact('books'));
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'book_id'     => ['required', 'exists:books,id'],
+            'book_id' => ['required', 'exists:books,id'],
             'target_date' => ['required', 'date', 'after_or_equal:today'],
         ], [
             'target_date.after_or_equal' => '目標期日は本日以降の日付を指定してください。',
@@ -67,9 +68,9 @@ class ReadingPlanController extends Controller
         }
 
         $user->readingPlans()->create([
-            'book_id'     => $validated['book_id'],
+            'book_id' => $validated['book_id'],
             'target_date' => $validated['target_date'],
-            'status'      => ReadingPlanStatus::InProgress,
+            'status' => ReadingPlanStatus::InProgress,
         ]);
 
         return redirect()->route('reading-plans.index')
@@ -114,7 +115,7 @@ class ReadingPlanController extends Controller
         $this->authorize('update', $readingPlan);
 
         $readingPlan->update([
-            'status'       => ReadingPlanStatus::Completed,
+            'status' => ReadingPlanStatus::Completed,
             'completed_at' => Carbon::today(),
         ]);
 

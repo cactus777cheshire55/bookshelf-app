@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ReviewRequest; 
+use App\Http\Requests\ReviewRequest;
 use App\Models\Book;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +25,7 @@ class ReviewController extends Controller
 
         $book->reviews()->create([
             'user_id' => $user->id,
-            'rating'  => $validated['rating'],
+            'rating' => $validated['rating'],
             'comment' => $validated['comment'] ?? null,
         ]);
 

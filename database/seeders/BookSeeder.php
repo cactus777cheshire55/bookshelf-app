@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Seeders;
 
@@ -12,7 +12,9 @@ class BookSeeder extends Seeder
     public function run(): void
     {
         $users = User::all();
-        if ($users->isEmpty()) return;
+        if ($users->isEmpty()) {
+            return;
+        }
 
         $booksData = [
             [

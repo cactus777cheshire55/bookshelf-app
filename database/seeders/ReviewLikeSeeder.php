@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Seeders;
 
@@ -13,7 +13,9 @@ class ReviewLikeSeeder extends Seeder
         $users = User::all();
         $reviews = Review::all();
 
-        if ($users->isEmpty() || $reviews->isEmpty()) return;
+        if ($users->isEmpty() || $reviews->isEmpty()) {
+            return;
+        }
 
         foreach ($reviews as $review) {
             // 自分のレビュー以外から0〜3人のユーザーを選出
