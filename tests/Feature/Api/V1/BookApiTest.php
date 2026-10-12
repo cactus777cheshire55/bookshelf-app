@@ -14,7 +14,7 @@ class BookApiTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function ap_i書籍一覧取得できるか(): void
+    public function 書籍一覧取得できるか(): void
     {
         Book::factory()->count(3)->create();
 
@@ -58,6 +58,14 @@ class BookApiTest extends TestCase
     }
 
     /** @test */
+    public function 存在しない書籍_i_dの詳細取得は404エラーになるか(): void
+    {
+        $response = $this->getJson('/api/v1/books/99999');
+
+        $response->assertStatus(404);
+    }
+
+    /** @test */
     public function ログインユーザーは書籍作成できるか(): void
     {
         $user = User::factory()->create();
@@ -89,6 +97,20 @@ class BookApiTest extends TestCase
         ]);
 
         $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function 書籍作成時のバリデーションエラーは422になるか(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user, ['*']);
+
+        $response = $this->postJson('/api/v1/books', [
+            'title' => '',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['title']);
     }
 
     /** @test */
@@ -143,6 +165,7 @@ class BookApiTest extends TestCase
             'description' => '勝手に書き換えます。',
             'genres' => [],
         ];
+
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
         $response->assertStatus(403);
@@ -151,5 +174,44 @@ class BookApiTest extends TestCase
             'id' => $book->id,
             'title' => '元のAPI本',
         ]);
+    }
+
+    /** @test */
+    public function 自分の書籍は削除できるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create(['user_id' => $user->id]);
+
+        Sanctum::actingAs($user, ['*']);
+
+        $response = $this->deleteJson("/api/v1/books/{$book->id}");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('books', ['id' => $book->id]);
+    }
+
+    /** @test */
+    public function 他人の書籍は削除できないか(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $book = Book::factory()->create(['user_id' => $owner->id]);
+
+        Sanctum::actingAs($otherUser, ['*']);
+
+        $response = $this->deleteJson("/api/v1/books/{$book->id}");
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('books', ['id' => $book->id]);
+    }
+
+    /** @test */
+    public function 未ログインユーザーは書籍削除できないか(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->deleteJson("/api/v1/books/{$book->id}");
+
+        $response->assertStatus(401);
     }
 }
