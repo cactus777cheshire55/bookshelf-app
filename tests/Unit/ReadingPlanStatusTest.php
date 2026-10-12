@@ -10,7 +10,7 @@ class ReadingPlanStatusTest extends TestCase
     /**
      * A basic unit test example.
      */
-    
+
     /** @test */
     public function 各ステータスのラベルが正しく取得できるか(): void
     {
@@ -20,10 +20,10 @@ class ReadingPlanStatusTest extends TestCase
     }
 
     /** @test */
-    public function 各ステータスに対応するCSSのクラスが合うか(): void
+    public function 各ステータスに対応する_cs_sのクラスが合うか(): void
     {
         $this->assertStringContainsString('bg-blue-100', ReadingPlanStatus::InProgress->badgeClass());
         $this->assertStringContainsString('bg-green-100', ReadingPlanStatus::Completed->badgeClass());
-        $this->assertStringContainsString('bg-red-100', ReadingPlanStatus::Expired->badgeClass()); 
+        $this->assertStringContainsString('bg-red-100', ReadingPlanStatus::Expired->badgeClass());
     }
 }

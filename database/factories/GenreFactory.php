@@ -12,8 +12,8 @@ class GenreFactory extends Factory
     public function definition(): array
     {
         return [
-                'name' => fake()->unique()->randomElement([
-                '小説', 'ビジネス', '技術書', '自己啓発', 'エッセイ', 
+            'name' => fake()->unique()->randomElement([
+                '小説', 'ビジネス', '技術書', '自己啓発', 'エッセイ',
                 '歴史', '科学', '芸術', '料理', '旅行',
             ]),
         ];

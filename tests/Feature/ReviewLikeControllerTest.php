@@ -19,9 +19,9 @@ class ReviewLikeControllerTest extends TestCase
 
         $response = $this->actingAs($user)->post("/reviews/{$review->id}/like");
 
-        $response->assertStatus(302); 
+        $response->assertStatus(302);
         $this->assertDatabaseMissing('review_likes', [
-            'user_id'   => $user->id,
+            'user_id' => $user->id,
             'review_id' => $review->id,
         ]);
     }
@@ -36,14 +36,14 @@ class ReviewLikeControllerTest extends TestCase
         $response = $this->actingAs($liker)->post("/reviews/{$review->id}/like");
 
         $this->assertDatabaseHas('review_likes', [
-            'user_id'   => $liker->id,
+            'user_id' => $liker->id,
             'review_id' => $review->id,
         ]);
 
         $response2 = $this->actingAs($liker)->post("/reviews/{$review->id}/like");
 
         $this->assertDatabaseMissing('review_likes', [
-            'user_id'   => $liker->id,
+            'user_id' => $liker->id,
             'review_id' => $review->id,
         ]);
     }

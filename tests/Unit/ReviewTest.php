@@ -24,7 +24,7 @@ class ReviewTest extends TestCase
         $review = Review::factory()->create([
             'user_id' => $user->id,
             'book_id' => $book->id,
-            'rating'  => 5,
+            'rating' => 5,
             'comment' => 'テストです',
         ]);
 
@@ -32,8 +32,8 @@ class ReviewTest extends TestCase
         $this->assertEquals('テストです', $review->comment);
     }
 
-        /** @test */
-        public function コメントなしレビューが投稿できるか(): void
+    /** @test */
+    public function コメントなしレビューが投稿できるか(): void
     {
         $user = User::factory()->create();
         $book = Book::factory()->create();
@@ -41,7 +41,7 @@ class ReviewTest extends TestCase
         $review = Review::factory()->create([
             'user_id' => $user->id,
             'book_id' => $book->id,
-            'rating'  => 1,
+            'rating' => 1,
             'comment' => '',
         ]);
 

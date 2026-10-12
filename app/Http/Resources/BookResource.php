@@ -10,17 +10,17 @@ class BookResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'             => $this->id,
-            'title'          => $this->title,
-            'author'         => $this->author,
-            'isbn'           => $this->isbn,
+            'id' => $this->id,
+            'title' => $this->title,
+            'author' => $this->author,
+            'isbn' => $this->isbn,
             'published_date' => $this->published_date ? $this->published_date->format('Y-m-d') : null,
-            'description'    => $this->description,
-            'image_url'      => $this->image_url,
+            'description' => $this->description,
+            'image_url' => $this->image_url,
 
             'user' => $this->whenLoaded('user', function () {
                 return [
-                    'id'   => $this->user->id,
+                    'id' => $this->user->id,
                     'name' => $this->user->name,
                 ];
             }),

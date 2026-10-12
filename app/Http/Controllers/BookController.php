@@ -156,7 +156,7 @@ class BookController extends Controller
     {
         if (strlen($isbn) !== 13 || ! ctype_digit($isbn)) {
             return response()->json([
-                'error' => 'ISBNは13桁の半角数字で入力してください。',
+                'error' => 'ISBN-13の値が不正です',
             ], 400);
         }
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Factories;
 
@@ -16,7 +16,7 @@ class ReviewFactory extends Factory
         return [
             'user_id' => User::factory(),
             'book_id' => Book::factory(),
-            'rating'  => fake()->numberBetween(1, 5),
+            'rating' => fake()->numberBetween(1, 5),
             'comment' => fake()->optional(0.5)->realText(120),
         ];
     }

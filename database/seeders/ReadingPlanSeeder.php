@@ -23,32 +23,31 @@ class ReadingPlanSeeder extends Seeder
         $today = Carbon::today();
 
         $plans = [
-            // --- 山田太郎 (主要シナリオ検証用 5件) ---
             [
                 'user_id' => $yamada->id,
                 'book_id' => $books[0]->id,
-                'target_date' => $today->copy()->addDays(3), // 3日前リマインダー対象
+                'target_date' => $today->copy()->addDays(3),
                 'completed_at' => null,
                 'status' => 'in_progress',
             ],
             [
                 'user_id' => $yamada->id,
                 'book_id' => $books[1]->id,
-                'target_date' => $today->copy(), // 当日リマインダー対象
+                'target_date' => $today->copy(),
                 'completed_at' => null,
                 'status' => 'in_progress',
             ],
             [
                 'user_id' => $yamada->id,
                 'book_id' => $books[2]->id,
-                'target_date' => $today->copy()->subDays(3), // 自動失効 & 3日後再エンゲージメント対象
+                'target_date' => $today->copy()->subDays(3),
                 'completed_at' => null,
                 'status' => 'in_progress',
             ],
             [
                 'user_id' => $yamada->id,
                 'book_id' => $books[3]->id,
-                'target_date' => $today->copy()->addDays(7), // リマインダー対象外
+                'target_date' => $today->copy()->addDays(7),
                 'completed_at' => null,
                 'status' => 'in_progress',
             ],
@@ -56,15 +55,14 @@ class ReadingPlanSeeder extends Seeder
                 'user_id' => $yamada->id,
                 'book_id' => $books[4]->id,
                 'target_date' => $today->copy()->subDays(10),
-                'completed_at' => $today->copy()->subDays(5), // 完了済み
+                'completed_at' => $today->copy()->subDays(5),
                 'status' => 'completed',
             ],
 
-            // --- 鈴木花子 (認可テスト用 1件) ---
             [
                 'user_id' => $suzuki->id,
                 'book_id' => $books[5]->id,
-                'target_date' => $today->copy()->addDays(5), // 403 エラーテスト用
+                'target_date' => $today->copy()->addDays(5),
                 'completed_at' => null,
                 'status' => 'in_progress',
             ],

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Database\Factories;
 
@@ -15,10 +15,10 @@ class ReadingPlanFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'     => User::factory(),
-            'book_id'     => Book::factory(),
+            'user_id' => User::factory(),
+            'book_id' => Book::factory(),
             'target_date' => fake()->dateTimeBetween('now', '+1 month')->format('Y-m-d'),
-            'status'      => ReadingPlanStatus::InProgress,
+            'status' => ReadingPlanStatus::InProgress,
         ];
     }
 
@@ -33,7 +33,7 @@ class ReadingPlanFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'target_date' => fake()->dateTimeBetween('-1 month', '-1 day')->format('Y-m-d'),
-            'status'      => ReadingPlanStatus::Expired,
+            'status' => ReadingPlanStatus::Expired,
         ]);
     }
 }

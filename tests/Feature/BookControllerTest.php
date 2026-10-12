@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Book;
 use App\Models\Genre;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,102 +14,272 @@ class BookControllerTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function 検索フィルターが動作するか(): void
+    public function ログインユーザーは書籍一覧画面を表示できるか(): void
     {
         $user = User::factory()->create();
-        $book1 = Book::factory()->create(['title' => 'HelloWorld']);
-        $book2 = Book::factory()->create(['title' => 'HelloLaravel']);
+        Book::factory()->count(3)->create();
 
-        $response = $this->actingAs($user)->get('/?keyword=HelloWorld');
+        $response = $this->actingAs($user)->get('/books');
 
         $response->assertStatus(200);
-        $response->assertSee('HelloWorld');
-        $response->assertDontSee('HelloLaravel');
     }
+
     /** @test */
-    public function ログインユーザーが書籍を登録できるか(): void
+    public function ログインユーザーは書籍登録画面を表示できるか(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/books/create');
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function 新規書籍を登録できるか(): void
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
 
         $payload = [
-            'title'          => '「サナエノミクス」で日本は繁栄するのか?!',
-            'author'         => '豊島文雄',
-            'isbn'           => '9784341088972',
-            'published_date' => '2026-10-12',
-            'description'   => '2025年パラダイムシフトの年「ドナルド＆サナエ」2人の指導者が誕生した！
-                                暴走する“マッドマン”大統領＆追従する“縁故主義”女性宰相
-
-                                第２のジャポニズムが世界をいやす！
-                                日本の文化、四季。日本人の気配り、和の精神。
-
-                                サナエノミクスの「責任ある積極財政」「成長戦略」、370兆円を費やし「官まかせ」の＜総花的・箱もの＞戦略ではなく,＜日本独自の強み＞に絞り込んだ戦略を断行すべき！― 本文＜第7章＞「高市内閣への提言」より
-
-                                ─ 主な目次 ─
-                                〈第１部〉世界の秩序と平和を蹂躙する指導者の誕生
-                                第１章:ドナルド・トランプ大統領就任により戦争が日常的に繰り返される世界が始まった ― 世界秩序を破壊する「タリフマン（関税男）」米国第一主義の独裁者 ─
-                                第２章：戦後日本の〝選挙〟と〝政治〟を「革命的」に変えた超保守派の女性宰相の登場 ─ 今すべきは「官」の肥大化をまねく「サナエノミクス」よりも責任ある「行政改革」 ─
-                                〈第２部〉「第1次石油危機」を克服した「民」による行政改革に学べ
-                                第３章:井深大と本田宗一郎の晩年の活躍 ─「日本の自殺」を防いだ行政改革 ─
-                                第４章：日本の鉄道技術の研究開発・調査を担う―鉄道総合技術研究所（JR総研）の初代会長・井深大が鉄道技術の国際化を実現―
-                                第５章： 日本を繁栄させた「変革」リーダー　日本を衰退させたリーダー
-                                〈第３部〉軍事大国による暗黒時代 VS 日本文化共有主義が世界をいやす
-                                第６章：日本文化の「気配り」と「倦まず弛まず」が世界をいやす
-                                第７章：高市内閣への提言',
-            'genres'         => [$genre->id],
+            'title' => 'Raspberry Piではじめる IoT×Webシステム開発入門',
+            'author' => '小笠原祐治',
+            'isbn' => '9784627858817',
+            'published_date' => '',
+            'description' => '',
+            'image_url' => 'https://placehold.co/200x300',
+            'genres' => [$genre->id],
         ];
 
         $response = $this->actingAs($user)->post('/books', $payload);
 
-        $book = Book::where('isbn', '9784341088972')->first();
+        $book = Book::where('isbn', '9784627858817')->first();
 
         $response->assertRedirect("/books/{$book->id}");
         $response->assertSessionHas('success', '書籍を登録しました');
 
         $this->assertDatabaseHas('books', [
-            'id'      => $book->id,
+            'id' => $book->id,
             'user_id' => $user->id,
-            'title'   => '「サナエノミクス」で日本は繁栄するのか?!',
+            'title' => 'Raspberry Piではじめる IoT×Webシステム開発入門',
+            'isbn' => '9784627858817',
         ]);
-
         $this->assertDatabaseHas('book_genre', [
-            'book_id'  => $book->id,
+            'book_id' => $book->id,
             'genre_id' => $genre->id,
         ]);
     }
 
     /** @test */
-    public function ISBNが重複するとエラーになるか(): void
+    public function 必須項目が未入力の場合はバリデーションエラーになるか(): void
     {
         $user = User::factory()->create();
-        Book::factory()->create(['isbn' => '9784341088972']);
 
         $payload = [
-            'title'  => 'テスト',
-            'author' => 'テスト',
-            'isbn'   => '9784341088972', 
-            'genres' => [],
+            'title' => '',
+            'author' => '',
+            'isbn' => '',
         ];
 
         $response = $this->actingAs($user)->post('/books', $payload);
 
-        $response->assertSessionHasErrors(['isbn']);
+        $response->assertSessionHasErrors(['title', 'author', 'isbn']);
+        $this->assertDatabaseCount('books', 0);
     }
 
     /** @test */
-    public function 他人の登録した書籍は更新できないかー403エラー(): void
+    public function 書籍詳細画面が表示されるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create([
+            'title' => 'テスト対象書籍',
+            'author' => 'テスト著者',
+        ]);
+
+        $response = $this->actingAs($user)->get("/books/{$book->id}");
+
+        $response->assertStatus(200);
+        $response->assertSee('テスト対象書籍');
+        $response->assertSee('テスト著者');
+    }
+
+    /** @test */
+    public function 投稿者本人は書籍編集画面を表示できるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->get("/books/{$book->id}/edit");
+
+        $response->assertStatus(200);
+        $response->assertSee($book->title);
+    }
+
+    /** @test */
+    public function 投稿者本人は書籍情報を更新できるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->for($user)->create(['title' => '変更前']);
+        $genre = Genre::factory()->create();
+        $payload = [
+            'title' => '変更後',
+            'author' => $book->author,
+            'isbn' => $book->isbn,
+            'genres' => [$genre->id],
+        ];
+
+        $response = $this->actingAs($user)->put("/books/{$book->id}", $payload);
+
+        $response->assertRedirect("/books/{$book->id}");
+        $response->assertSessionHas('success', '書籍情報を更新しました。');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'title' => '変更後',
+        ]);
+    }
+
+    /** @test */
+    public function 他人の書籍は更新できないか_403_forbidden(): void
     {
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
-        $book = Book::factory()->for($owner)->create(['title' => 'テスト']);
+        $book = Book::factory()->for($owner)->create(['title' => '元のタイトル']);
 
         $response = $this->actingAs($otherUser)->put("/books/{$book->id}", [
-            'title'  => 'テスト',
+            'title' => '不正',
             'author' => $book->author,
-            'isbn'   => $book->isbn,
+            'isbn' => $book->isbn,
         ]);
 
         $response->assertStatus(403);
-        $this->assertDatabaseHas('books', ['id' => $book->id, 'title' => 'テスト']);
+        $this->assertDatabaseHas('books', ['id' => $book->id, 'title' => '元のタイトル']);
+    }
+
+    /** @test */
+    public function 投稿者本人は書籍を削除できるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->delete("/books/{$book->id}");
+
+        $response->assertRedirect('/');
+        $response->assertSessionHas('success', '書籍を削除しました');
+
+        $this->assertDatabaseMissing('books', ['id' => $book->id]);
+    }
+
+    /** @test */
+    public function 他人の登録した書籍は削除できないか_403_forbidden(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $book = Book::factory()->for($owner)->create();
+
+        $response = $this->actingAs($otherUser)->delete("/books/{$book->id}");
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('books', ['id' => $book->id]);
+    }
+
+    /** @test */
+    public function タイトル、著者名で検索絞り込みができるか(): void
+    {
+        $user = User::factory()->create();
+
+        $book1 = Book::factory()->create(['title' => 'HalloWorld', 'author' => '山田太郎']);
+        $book2 = Book::factory()->create(['title' => 'HalloLaravel', 'author' => '鈴木花子']);
+
+        $response1 = $this->actingAs($user)->get('/books?keyword=World');
+        $response1->assertStatus(200);
+        $response1->assertSee('HalloWorld');
+        $response1->assertDontSee('HalloLaravel');
+
+        $response2 = $this->actingAs($user)->get('/books?keyword=鈴木');
+        $response2->assertStatus(200);
+        $response2->assertSee('HalloLaravel');
+        $response2->assertDontSee('HalloWorld');
+    }
+
+    /** @test */
+    public function ジャンル指定で書籍を絞り込みできるか(): void
+    {
+        $user = User::factory()->create();
+
+        $genreTech = Genre::factory()->create(['name' => '技術書']);
+        $genreNovel = Genre::factory()->create(['name' => '小説']);
+
+        $bookTech = Book::factory()->create(['title' => 'Raspberry Piクックブック 第4版']);
+        $bookTech->genres()->attach($genreTech);
+
+        $bookNovel = Book::factory()->create(['title' => '銀河鉄道の夜']);
+        $bookNovel->genres()->attach($genreNovel);
+
+        $response = $this->actingAs($user)->get("/books?genre={$genreTech->id}");
+
+        $response->assertStatus(200);
+        $response->assertSee('Raspberry Piクックブック 第4版');
+        $response->assertDontSee('銀河鉄道の夜');
+    }
+
+    /** @test */
+    public function 登録日時の新しい順でソートできるか(): void
+    {
+        $user = User::factory()->create();
+
+        $oldBook = Book::factory()->create(['title' => '古い本', 'created_at' => now()->subDays(2)]);
+        $newBook = Book::factory()->create(['title' => '新しい本', 'created_at' => now()]);
+
+        $response = $this->actingAs($user)->get('/books?sort=latest');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['新しい本', '古い本']);
+    }
+
+    /** @test */
+    public function 登録日時の古い順でソートできるか(): void
+    {
+        $user = User::factory()->create();
+
+        $oldBook = Book::factory()->create(['title' => '古い本', 'created_at' => now()->subDays(2)]);
+        $newBook = Book::factory()->create(['title' => '新しい本', 'created_at' => now()]);
+
+        $response = $this->actingAs($user)->get('/books?sort=oldest');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['古い本', '新しい本']);
+    }
+
+    /** @test */
+    public function タイトルの五十音_アルファベット昇順でソートできるか(): void
+    {
+        $user = User::factory()->create();
+
+        $bookA = Book::factory()->create(['title' => 'Abook']);
+        $bookB = Book::factory()->create(['title' => 'Bbook']);
+
+        $response = $this->actingAs($user)->get('/books?sort=title');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['Abook', 'Bbook']);
+    }
+
+    /** @test */
+    public function レビュー平均評価が高い順にソートできるか(): void
+    {
+        $user = User::factory()->create();
+
+        $highRatedBook = Book::factory()->create(['title' => '高評価本']);
+        Review::factory()->create(['book_id' => $highRatedBook->id, 'rating' => 5]);
+
+        $lowRatedBook = Book::factory()->create(['title' => '低評価本']);
+        Review::factory()->create(['book_id' => $lowRatedBook->id, 'rating' => 2]);
+
+        $noReviewBook = Book::factory()->create(['title' => 'レビューなし本']);
+
+        $response = $this->actingAs($user)->get('/books?sort=rating');
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['高評価本', '低評価本', 'レビューなし本']);
     }
 }

@@ -26,9 +26,9 @@ class StoreBookRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
             'isbn' => ['required', 'string', 'size:13',  'regex:/^[0-9]+$/', 'unique:books,isbn'],
-            'published_date' => ['nullable', 'date','after_or_equal:1900-01-01','before_or_equal:+5 years',],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'image_url' => ['nullable', 'url', 'max:512'],
+            'published_date' => ['nullable', 'date'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'image_url' => ['nullable', 'url', 'max:255'],
             'genres' => ['required', 'min:1'],
         ];
     }
@@ -43,11 +43,10 @@ class StoreBookRequest extends FormRequest
             'isbn' => 'ISBN-13の値が不正です',
             'isbn.unique' => 'このISBNは既に他の書籍で登録されています',
             'isbn.required' => 'ISBN-13を入力してください',
-            'description.max' => '説明は2000文字以内で入力してください',
+            'description.max' => '説明は255文字以内で入力してください',
             'genres' => 'ジャンルを選んでください',
-            'image.max' => 'URLの文字数は512文字以内で入力してください',
-            'published_date.after_or_equal' => '公開日は西暦1900年以降の日付を指定してください',
-            'published_date.before_or_equal' => '公開日は5年以内の日付を指定してください。',
+            'image.max' => 'URLの文字数は255文字以内で入力してください',
+            'published_date' => '年月日の形式に従ってください',
         ];
     }
 }

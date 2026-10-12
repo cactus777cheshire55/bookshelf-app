@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Book>
+ * @extends Factory<Book>
  */
 class BookFactory extends Factory
 {
@@ -16,14 +16,14 @@ class BookFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'        => User::factory(),
-            'title'          => fake()->realText(20),
-            'author'         => fake()->name(),
+            'user_id' => User::factory(),
+            'title' => fake()->realText(20),
+            'author' => fake()->name(),
 
-            'isbn'           => fake()->unique()->numerify('978##########'),
+            'isbn' => fake()->unique()->numerify('978##########'),
             'published_date' => fake()->optional(0.5)->date(),
-            'description'    => fake()->optional(0.5)->realText(100),
-            'image_url'      => 'https://placehold.co/200x300/e2e8f0/475569?text=' . urlencode(fake()->word()),
+            'description' => fake()->optional(0.5)->realText(100),
+            'image_url' => 'https://placehold.co/200x300/e2e8f0/475569?text='.urlencode(fake()->word()),
         ];
     }
 }

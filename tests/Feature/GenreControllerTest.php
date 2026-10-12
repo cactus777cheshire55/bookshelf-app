@@ -38,7 +38,7 @@ class GenreControllerTest extends TestCase
         $response->assertRedirect(route('genres.index'));
 
         $this->assertDatabaseHas('genres', [
-            'id'   => $genre->id,
+            'id' => $genre->id,
             'name' => '新しいジャンル名',
         ]);
     }

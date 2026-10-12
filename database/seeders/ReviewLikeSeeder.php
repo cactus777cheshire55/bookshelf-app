@@ -18,7 +18,6 @@ class ReviewLikeSeeder extends Seeder
         }
 
         foreach ($reviews as $review) {
-            // 自分のレビュー以外から0〜3人のユーザーを選出
             $eligibleUsers = $users->where('id', '!=', $review->user_id);
             $likeCount = min(rand(0, 3), $eligibleUsers->count());
 

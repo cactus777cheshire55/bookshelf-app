@@ -9,5 +9,8 @@ return [
         'password' => [
             'required' => 'パスワードを入力してください',
         ],
+        'published_date' => [
+            'published_date' => '年月日の形式に従ってください',
+        ],
     ],
 ];

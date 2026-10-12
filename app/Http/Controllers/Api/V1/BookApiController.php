@@ -13,11 +13,11 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class BookApiController extends Controller
 {
-        public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = Book::with(['genres'])
             ->withAvg('reviews', 'rating')
-            ->withCount('reviews'); 
+            ->withCount('reviews');
 
         if ($keyword = $request->input('keyword')) {
             $query->where(function ($q) use ($keyword) {
@@ -34,9 +34,9 @@ class BookApiController extends Controller
 
         match ($request->input('sort')) {
             'oldest' => $query->oldest(),
-            'title'  => $query->orderBy('title', 'asc'),
+            'title' => $query->orderBy('title', 'asc'),
             'rating' => $query->orderByRaw('reviews_avg_rating IS NULL ASC')->orderBy('reviews_avg_rating', 'desc'),
-            default  => $query->latest(),
+            default => $query->latest(),
         };
 
         $perPage = (int) $request->input('per_page', 20);

@@ -16,9 +16,9 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ], [
-            'email.required' => 'メールアドレスは必須です。',
-            'email.email' => '正しいメールアドレス形式で入力してください。',
-            'password.required' => 'パスワードは必須です。',
+            'email.required' => 'メールアドレスを入力してください',
+            'email.email' => 'メールアドレスはメール形式で入力してください',
+            'password.required' => 'パスワードを入力してください',
         ]);
 
         $user = User::where('email', $request->email)->first();

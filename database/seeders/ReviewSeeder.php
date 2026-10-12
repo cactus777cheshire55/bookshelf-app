@@ -19,7 +19,6 @@ class ReviewSeeder extends Seeder
             return;
         }
 
-        // 評価別の日本語コメントテンプレート
         $commentsByRating = [
             5 => ['素晴らしい本でした！', '人生が変わりました。', '何度も読み返しています。'],
             4 => ['とても参考になりました。', '読みやすくておすすめです。', '期待通りの内容でした。'],
@@ -29,9 +28,7 @@ class ReviewSeeder extends Seeder
         ];
 
         foreach ($books as $book) {
-            // 各書籍に2〜4件のレビューをランダム投稿
             $reviewCount = rand(2, 4);
-            // 同一書籍に同一ユーザーが複数レビューを連続投稿しないようランダム抽出
             $selectedUsers = $users->random(min($reviewCount, $users->count()));
 
             foreach ($selectedUsers as $user) {

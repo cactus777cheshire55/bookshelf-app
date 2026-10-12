@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Tests\Unit\Policies;
 
@@ -17,7 +17,7 @@ class BookPolicyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->policy = new BookPolicy();
+        $this->policy = new BookPolicy;
     }
 
     /** @test */

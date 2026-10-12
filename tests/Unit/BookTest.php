@@ -26,7 +26,7 @@ class BookTest extends TestCase
         $this->assertInstanceOf(User::class, $book->user);
         $this->assertEquals($user->id, $book->user->id);
     }
-    
+
     /** @test */
     public function 書籍が複数のジャンルを持つことが可能か(): void
     {
@@ -49,5 +49,4 @@ class BookTest extends TestCase
         $this->assertInstanceOf(Collection::class, $book->reviews);
         $this->assertCount(3, $book->reviews);
     }
-
 }

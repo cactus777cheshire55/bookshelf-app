@@ -18,7 +18,6 @@ class FavoriteSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            // 各ユーザーに3〜5冊のお気に入りをランダム設定
             $favoriteBooks = $books->random(rand(3, 5));
             $user->favoriteBooks()->syncWithoutDetaching($favoriteBooks->pluck('id'));
         }

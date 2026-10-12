@@ -31,7 +31,7 @@ class UpdateBookApiRequest extends FormRequest
             ],
             'published_date' => ['nullable', 'date'],
             'description' => ['nullable', 'string'],
-            'image_url' => ['nullable', 'url', 'max:2048'],
+            'image_url' => ['nullable', 'url', 'max:255'],
             'genres' => ['required', 'array', 'min:1'],
             'genres.*' => ['integer', 'exists:genres,id'],
         ];
@@ -40,18 +40,19 @@ class UpdateBookApiRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'title.required' => 'タイトルは必須です。',
+            'title.required' => 'タイトルを入力してください',
             'title.max' => 'タイトルは255文字以内で入力してください。',
-            'author.required' => '著者名は必須です。',
+            'author.required' => '著者名を入力してください',
             'author.max' => '著者名は255文字以内で入力してください。',
-            'isbn.size' => 'ISBNは13桁で入力してください。',
-            'isbn.unique' => 'このISBNは既に他の書籍で登録されています。',
-            'published_date.date' => '正しい日付形式で入力してください。',
-            'image_url.url' => '有効なURL形式で入力してください。',
-            'image_url.max' => '画像URLは2048バイト以内で入力してください。',
-            'genres.required' => 'ジャンルは1つ以上選択してください。',
-            'genres.min' => 'ジャンルは1つ以上選択してください。',
-            'genres.*.exists' => '選択されたジャンルが存在しません。',
+            'isbn.required' => 'ISBN-13を入力してください',
+            'isbn.size' => 'ISBN-13の値が不正です',
+            'isbn.unique' => 'このISBNは既に他の書籍で登録されています',
+            'published_date.date' => '年月日の形式に従ってください',
+            'image_url.url' => '有効なURL形式で入力してください',
+            'image_url.max' => '画像の文字数は255文字以内で入力してください',
+            'genres.required' => 'ジャンル選んでください',
+            'genres.min' => 'ジャンル選んでください',
+            'genres.*.exists' => '選択されたジャンルが存在しません',
         ];
     }
 

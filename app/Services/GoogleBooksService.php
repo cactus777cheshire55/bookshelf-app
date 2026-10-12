@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services;
 
@@ -19,11 +19,11 @@ class GoogleBooksService
         $item = $response->json('items.0.volumeInfo');
 
         return [
-            'title'          => $item['title'] ?? '',
-            'author'         => $item['authors'] ?? '',
+            'title' => $item['title'] ?? '',
+            'author' => $item['authors'] ?? '',
             'published_date' => $item['publishedDate'] ?? null,
-            'description'    => $item['description'] ?? null,
-            'image_url'      => $item['imageLinks']['thumbnail'] ?? null,
+            'description' => $item['description'] ?? null,
+            'image_url' => $item['imageLinks']['thumbnail'] ?? null,
         ];
     }
 }
