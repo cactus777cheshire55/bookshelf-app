@@ -71,7 +71,7 @@ class BookController extends Controller
         if ($request->filled('image_url')) {
             $book->image_url = $request->input('image_url');
         } else {
-            $book->image_url = sprintf('https://placehold.co/200x300?text=Book+%d', $book->id);
+            $book->image_url = sprintf('https://placehold.co/200x300/e2e8f0/475569?text=%d', $book->id);
         }
         $book->save();
 

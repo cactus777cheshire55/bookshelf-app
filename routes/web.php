@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [BookController::class, 'index'])->name('books.index');
-Route::get('/books', [BookController::class, 'index']);
 
 Route::get('/ranking', [BookController::class, 'rankingIndex'])->name('ranking.index');
 
