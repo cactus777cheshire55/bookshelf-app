@@ -20,6 +20,8 @@ class ReviewLikeControllerTest extends TestCase
         $response = $this->actingAs($user)->post("/reviews/{$review->id}/like");
 
         $response->assertStatus(302);
+        $response->assertSessionHas('error');
+
         $this->assertDatabaseMissing('review_likes', [
             'user_id' => $user->id,
             'review_id' => $review->id,
@@ -34,6 +36,7 @@ class ReviewLikeControllerTest extends TestCase
         $review = Review::factory()->create(['user_id' => $reviewOwner->id]);
 
         $response = $this->actingAs($liker)->post("/reviews/{$review->id}/like");
+        $response->assertStatus(302);
 
         $this->assertDatabaseHas('review_likes', [
             'user_id' => $liker->id,
@@ -41,9 +44,23 @@ class ReviewLikeControllerTest extends TestCase
         ]);
 
         $response2 = $this->actingAs($liker)->post("/reviews/{$review->id}/like");
+        $response2->assertStatus(302);
 
         $this->assertDatabaseMissing('review_likes', [
             'user_id' => $liker->id,
+            'review_id' => $review->id,
+        ]);
+    }
+
+    /** @test */
+    public function 未ログインユーザーはいいねできないか(): void
+    {
+        $review = Review::factory()->create();
+
+        $response = $this->post("/reviews/{$review->id}/like");
+
+        $response->assertRedirect('/login');
+        $this->assertDatabaseMissing('review_likes', [
             'review_id' => $review->id,
         ]);
     }
