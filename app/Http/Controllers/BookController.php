@@ -168,8 +168,9 @@ class BookController extends Controller
             if ($openBdResponse->successful()) {
                 $openBdData = $openBdResponse->json();
 
-                if (! empty($openBdData) && $openBdData[0] !== null) {
-                    $summary = $openBdData[0]['summary'];
+                if (! empty($openBdData) && isset($openBdData[0]) && $openBdData[0] !== null) {
+                    $bookInfo = $openBdData[0]; 
+                    $summary  = $bookInfo['summary'] ?? [];
 
                     $pubdate = $summary['pubdate'] ?? '';
                     if (strlen($pubdate) === 8) {
@@ -183,27 +184,45 @@ class BookController extends Controller
                         $imageUrl = str_replace('http://', 'https://', $imageUrl);
                     }
 
+                    $description = '';
+                    if (isset($bookInfo['onix']['CollateralDetail']['TextContent'])) {
+                        foreach ($bookInfo['onix']['CollateralDetail']['TextContent'] as $textContent) {
+                            if (! empty($textContent['Text'])) {
+                                $description = $textContent['Text'];
+                                break;
+                            }
+                        }
+                    }
+
+                    $description = str_replace(["\r\n", "\r"], "\n", $description);
+
+                    if (mb_strlen($description) > 240) {
+                        $description = mb_substr($description, 0, 237) . '...';
+                    }
+
                     return response()->json([
-                        'title' => $summary['title'] ?? '',
-                        'author' => $summary['author'] ?? '',
-                        'description' => '',
+                        'title'          => $summary['title'] ?? '',
+                        'author'         => $summary['author'] ?? '',
+                        'description'    => $description,
                         'published_date' => $pubdate,
-                        'image_url' => $imageUrl,
+                        'image_url'      => $imageUrl,
                     ]);
                 }
             }
+
             $googleResponse = Http::get('https://www.googleapis.com/books/v1/volumes', [
                 'q' => "isbn:{$isbn}",
             ]);
 
             $googleData = $googleResponse->json();
+            
             if (empty($googleData['totalItems']) || empty($googleData['items'][0]['volumeInfo'])) {
                 return response()->json([
                     'error' => '該当する書籍が見つかりませんでした。',
                 ], 404);
             }
 
-            $volumeInfo = $googleData['items'][0]['volumeInfo'];
+            $volumeInfo = $googleData['items'][0]['volumeInfo']; 
 
             $authors = isset($volumeInfo['authors'])
                 ? implode(', ', $volumeInfo['authors'])
@@ -217,12 +236,20 @@ class BookController extends Controller
                 $imageUrl = str_replace('http://', 'https://', $imageUrl);
             }
 
+            $description = $volumeInfo['description'] ?? '';
+
+            $description = str_replace(["\r\n", "\r"], "\n", $description);
+
+            if (mb_strlen($description) > 240) {
+                $description = mb_substr($description, 0, 237) . '...';
+            }
+
             return response()->json([
-                'title' => $volumeInfo['title'] ?? '',
-                'author' => $authors,
-                'description' => $volumeInfo['description'] ?? '',
+                'title'          => $volumeInfo['title'] ?? '',
+                'author'         => $authors,
+                'description'    => $description, 
                 'published_date' => $volumeInfo['publishedDate'] ?? '',
-                'image_url' => $imageUrl,
+                'image_url'      => $imageUrl,
             ]);
 
         } catch (\Exception $e) {

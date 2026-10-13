@@ -130,4 +130,40 @@ class IsbnSearchTest extends TestCase
         $response->assertStatus(404)
             ->assertJson(['error' => '該当する書籍が見つかりませんでした。']);
     }
+
+    /** @test */
+    public function ISBN検索_説明が240文字を超える場合は237文字でカットされドットが付与されるか(): void
+    {
+        Http::fake([
+            '*' => Http::response([
+                [
+                    'summary' => [
+                        'title'  => 'テスト本',
+                        'author' => 'テスト著者',
+                    ],
+                    'onix' => [
+                        'CollateralDetail' => [
+                            'TextContent' => [
+                                ['Text' => str_repeat('あ', 300)] 
+                            ]
+                        ]
+                    ]
+                ]
+            ], 200),
+        ]);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->getJson('/books/isbn/9784341088972');
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json();
+
+        $this->assertEquals(240, mb_strlen($responseData['description']));
+        $this->assertTrue(str_ends_with($responseData['description'], '...'));
+        
+        $expectedContent = str_repeat('あ', 237) . '...';
+        $this->assertEquals($expectedContent, $responseData['description']);
+    }
 }
