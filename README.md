@@ -186,35 +186,38 @@ http://localhost
     ```bash
     sail artisan migrate:fresh --seed
     ```
+
     このコマンドの入力後、下記のエラーが表示されることがあります。
+
     ```bash
-       Illuminate\Database\QueryException 
+       Illuminate\Database\QueryException
       SQLSTATE[HY000] [1044] Access denied for user 'sail'@'%' to database 'contact-form-app' (Connection: mysql, SQL: select table_name as `name`,         (data_length + index_length) as `size`, table_comment as `comment`, engine as `engine`, table_collation as `collation` from information_schema.tables where table_schema = 'contact-form-app' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED') order by table_name)
 
       at vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
         825▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
         826▕                 );
         827▕             }
-        828▕ 
+        828▕
       ➜ 829▕             throw new QueryException(
         830▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
         831▕             );
         832▕         }
         833▕     }
 
-      +43 vendor frames 
+      +43 vendor frames
 
       44  artisan:35
           Illuminate\Foundation\Console\Kernel::handle()
     ```
+
     このエラーはコンテナ内にデータが残っており、エラーが生じているケースなどがあります。
     その場合は、以下のコマンドを順に実行して各コンテナを再起動して下さい。
+
     ```Bash
     sail down -v
     sail up -d　//コマンド実行後にSQLコンテナが立ち上がるまで時間がかかります。30秒ほどお待ちください。
     sail artisan migrate:fresh --seed
     ```
-    
 
 7. **フロントエンドのビルド**
 
@@ -243,6 +246,7 @@ sail artisan test --coverage
 ```
 
 ## 機能一覧
+
 - ユーザー認証（登録、ログイン、ログアウト）
 - 書籍登録・一覧取得・検索・単体取得
 - 書籍詳細・編集・削除・
@@ -253,8 +257,6 @@ sail artisan test --coverage
 - 読書計画登録・一覧取得・編集
 - 通知一覧・バッジ処理による実行
 
-
-
 ## APIエンドポイント一覧
 
 - GET:/api/v1/books 書籍一覧を取得する
@@ -263,4 +265,4 @@ sail artisan test --coverage
 - PUT:/api/v1/books/{book} 書籍を更新する
 - DELETE:/api/v1/books/{book} 書籍を削除する
 
-- ポストマンでURLに http://localhost/api/v1/login getﾒｿｯﾄﾞ Body タブをrawにしてタイプを JSON に設定し { "email": "yamada@example.com", "password": "password" } で送信してtokenを出してからAuthorizationタブのauth typeをBearer Tokenにしてtokenに張り付ける
+- ポストマンでURLに http://localhost/api/v1/login postﾒｿｯﾄﾞ Body タブをrawにしてタイプを JSON に設定し { "email": "yamada@example.com", "password": "password" } で送信してtokenを出してからAuthorizationタブのauth typeをBearer Tokenにしてtokenに張り付ける

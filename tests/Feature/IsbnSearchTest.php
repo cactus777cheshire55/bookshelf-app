@@ -132,27 +132,31 @@ class IsbnSearchTest extends TestCase
     }
 
     /** @test */
-    public function ISBN検索_説明が240文字を超える場合は237文字でカットされドットが付与されるか(): void
+    public function isb_n検索_open_b_dから長文の説明文が省略されず全文取得できる(): void
     {
+        $user = User::factory()->create();
+
+        $longDescription = str_repeat('あいうえお', 100);
+
         Http::fake([
-            '*' => Http::response([
+            'https://api.openbd.jp*' => Http::response([
                 [
                     'summary' => [
-                        'title'  => 'テスト本',
-                        'author' => 'テスト著者',
+                        'title' => 'テスト書籍タイトル',
+                        'author' => 'テスト著者名',
+                        'pubdate' => '20261012',
+                        'cover' => 'https://example.com/cover.jpg',
                     ],
                     'onix' => [
                         'CollateralDetail' => [
                             'TextContent' => [
-                                ['Text' => str_repeat('あ', 300)] 
-                            ]
-                        ]
-                    ]
-                ]
+                                ['Text' => $longDescription],
+                            ],
+                        ],
+                    ],
+                ],
             ], 200),
         ]);
-
-        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->getJson('/books/isbn/9784341088972');
 
@@ -160,10 +164,48 @@ class IsbnSearchTest extends TestCase
 
         $responseData = $response->json();
 
-        $this->assertEquals(240, mb_strlen($responseData['description']));
-        $this->assertTrue(str_ends_with($responseData['description'], '...'));
-        
-        $expectedContent = str_repeat('あ', 237) . '...';
-        $this->assertEquals($expectedContent, $responseData['description']);
+        $this->assertEquals(500, mb_strlen($responseData['description']));
+
+        $this->assertEquals($longDescription, $responseData['description']);
+
+        $this->assertFalse(substr($responseData['description'], -3) === '...');
+    }
+
+    /** @test */
+    public function isb_n検索_google_books_ap_iから長文の説明文が省略されず全文取得できる(): void
+    {
+        $user = User::factory()->create();
+
+        $longDescription = str_repeat('かきくけこ', 120);
+
+        Http::fake([
+            'https://api.openbd.jp*' => Http::response([null], 200),
+            'https://www.googleapis.com/books/v1/volumes*' => Http::response([
+                'totalItems' => 1,
+                'items' => [
+                    [
+                        'volumeInfo' => [
+                            'title' => 'Google Books 書籍タイトル',
+                            'authors' => ['Google 著者'],
+                            'description' => $longDescription,
+                            'publishedDate' => '2026-10-12',
+                            'imageLinks' => ['thumbnail' => 'https://example.com/google_cover.jpg'],
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $response = $this->actingAs($user)->getJson('/books/isbn/9784341088972');
+
+        $response->assertStatus(200);
+
+        $responseData = $response->json();
+
+        $this->assertEquals(600, mb_strlen($responseData['description']));
+
+        $this->assertEquals($longDescription, $responseData['description']);
+
+        $this->assertFalse(substr($responseData['description'], -3) === '...');
     }
 }

@@ -161,6 +161,7 @@ class BookController extends Controller
         }
 
         try {
+            // 1. openBDからの優先取得
             $openBdResponse = Http::get('https://api.openbd.jp/v1/get', [
                 'isbn' => $isbn,
             ]);
@@ -169,8 +170,8 @@ class BookController extends Controller
                 $openBdData = $openBdResponse->json();
 
                 if (! empty($openBdData) && isset($openBdData[0]) && $openBdData[0] !== null) {
-                    $bookInfo = $openBdData[0]; 
-                    $summary  = $bookInfo['summary'] ?? [];
+                    $bookInfo = $openBdData[0];
+                    $summary = $bookInfo['summary'] ?? [];
 
                     $pubdate = $summary['pubdate'] ?? '';
                     if (strlen($pubdate) === 8) {
@@ -194,35 +195,30 @@ class BookController extends Controller
                         }
                     }
 
-                    $description = str_replace(["\r\n", "\r"], "\n", $description);
-
-                    if (mb_strlen($description) > 240) {
-                        $description = mb_substr($description, 0, 237) . '...';
-                    }
-
+                    // ★ 字数制限カットを削除し、取得した文章をそのまま返却
                     return response()->json([
-                        'title'          => $summary['title'] ?? '',
-                        'author'         => $summary['author'] ?? '',
-                        'description'    => $description,
+                        'title' => $summary['title'] ?? '',
+                        'author' => $summary['author'] ?? '',
+                        'description' => $description,
                         'published_date' => $pubdate,
-                        'image_url'      => $imageUrl,
+                        'image_url' => $imageUrl,
                     ]);
                 }
             }
 
+            // 2. Google Books APIへのフォールバック
             $googleResponse = Http::get('https://www.googleapis.com/books/v1/volumes', [
                 'q' => "isbn:{$isbn}",
             ]);
 
             $googleData = $googleResponse->json();
-            
             if (empty($googleData['totalItems']) || empty($googleData['items'][0]['volumeInfo'])) {
                 return response()->json([
                     'error' => '該当する書籍が見つかりませんでした。',
                 ], 404);
             }
 
-            $volumeInfo = $googleData['items'][0]['volumeInfo']; 
+            $volumeInfo = $googleData['items'][0]['volumeInfo'];
 
             $authors = isset($volumeInfo['authors'])
                 ? implode(', ', $volumeInfo['authors'])
@@ -236,20 +232,13 @@ class BookController extends Controller
                 $imageUrl = str_replace('http://', 'https://', $imageUrl);
             }
 
-            $description = $volumeInfo['description'] ?? '';
-
-            $description = str_replace(["\r\n", "\r"], "\n", $description);
-
-            if (mb_strlen($description) > 240) {
-                $description = mb_substr($description, 0, 237) . '...';
-            }
-
+            // ★ 字数制限カットを削除し、取得した文章をそのまま返却
             return response()->json([
-                'title'          => $volumeInfo['title'] ?? '',
-                'author'         => $authors,
-                'description'    => $description, 
+                'title' => $volumeInfo['title'] ?? '',
+                'author' => $authors,
+                'description' => $volumeInfo['description'] ?? '',
                 'published_date' => $volumeInfo['publishedDate'] ?? '',
-                'image_url'      => $imageUrl,
+                'image_url' => $imageUrl,
             ]);
 
         } catch (\Exception $e) {
