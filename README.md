@@ -25,12 +25,14 @@
 
 ```mermaid
 erDiagram
-     users {
+    users {
         bigint id PK
         string name
-        string email UK
-        string password
-        timestamps created_at_updated_at
+        string email "UK"
+        string password       
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     books {
@@ -38,47 +40,53 @@ erDiagram
         bigint user_id FK
         string title
         string author
-        string isbn UK
+        string isbn "UK"
         date published_date
         text description
         string image_url
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     genres {
         bigint id PK
-        string name UK
-        timestamps created_at_updated_at
+        string name "UK"
+        timestamp created_at
+        timestamp updated_at
     }
 
     book_genre {
         bigint id PK
         bigint book_id FK
         bigint genre_id FK
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     reviews {
         bigint id PK
         bigint user_id FK
         bigint book_id FK
-        unsigned_tinyint rating
+        tinyint rating
         text comment
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     favorites {
         bigint id PK
         bigint user_id FK
         bigint book_id FK
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     review_likes {
         bigint id PK
         bigint user_id FK
         bigint review_id FK
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
 
     reading_plans {
@@ -88,13 +96,27 @@ erDiagram
         date target_date
         date completed_at
         string status
-        timestamps created_at_updated_at
+        timestamp created_at
+        timestamp updated_at
     }
+
+    notifications {
+        uuid id PK
+        string type
+        string notifiable_type
+        bigint notifiable_id
+        text data
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
     users ||--o{ books : "creates"
     users ||--o{ reviews : "posts"
     users ||--o{ favorites : "likes"
     users ||--o{ review_likes : "likes"
     users ||--o{ reading_plans : "plans"
+    users ||--o{ notifications : "receives"
 
     books ||--o{ reviews : "has"
     books ||--o{ favorites : "favorited_by"
@@ -103,7 +125,6 @@ erDiagram
 
     genres ||--o{ book_genre : "belongs_to"
     reviews ||--o{ review_likes : "liked_by"
-```
 
 ## 開発環境URL
 
@@ -121,7 +142,7 @@ http://localhost
 1. **リポジトリをクローン**
 
     ```bash
-    git clone https://github.com/coachtech-material/ExampleAnswer-ConfirmationTest-ContactForm.git
+    git clone https://github.com/cactus777cheshire55/bookshelf-app
     ```
 
 2. **.envファイルの準備**
@@ -191,7 +212,7 @@ http://localhost
 
     ```bash
        Illuminate\Database\QueryException
-      SQLSTATE[HY000] [1044] Access denied for user 'sail'@'%' to database 'contact-form-app' (Connection: mysql, SQL: select table_name as `name`,         (data_length + index_length) as `size`, table_comment as `comment`, engine as `engine`, table_collation as `collation` from information_schema.tables where table_schema = 'contact-form-app' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED') order by table_name)
+      SQLSTATE[HY000] [1044] Access denied for user 'sail'@'%' to database 'bookshelf-app' (Connection: mysql, SQL: select table_name as `name`,         (data_length + index_length) as `size`, table_comment as `comment`, engine as `engine`, table_collation as `collation` from information_schema.tables where table_schema = 'bookshelf-app' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED') order by table_name)
 
       at vendor/laravel/framework/src/Illuminate/Database/Connection.php:829
         825▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
