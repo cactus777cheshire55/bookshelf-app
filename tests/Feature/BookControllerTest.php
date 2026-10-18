@@ -44,7 +44,7 @@ class BookControllerTest extends TestCase
             'title' => 'Raspberry Piではじめる IoT×Webシステム開発入門',
             'author' => '小笠原祐治',
             'isbn' => '9784627858817',
-            'published_date' => '',
+            'published_date' => '2026-01-01',
             'description' => '',
             'image_url' => 'https://placehold.co/200x300',
             'genres' => [$genre->id],
@@ -125,6 +125,7 @@ class BookControllerTest extends TestCase
             'author' => $book->author,
             'isbn' => $book->isbn,
             'genres' => [$genre->id],
+            'published_date' => now()->addDays(1)->format('Y-m-d'),
         ];
 
         $response = $this->actingAs($user)->put("/books/{$book->id}", $payload);
@@ -149,6 +150,7 @@ class BookControllerTest extends TestCase
             'title' => '不正',
             'author' => $book->author,
             'isbn' => $book->isbn,
+            'published_date' => now()->addDays(1)->format('Y-m-d'),
         ]);
 
         $response->assertStatus(403);

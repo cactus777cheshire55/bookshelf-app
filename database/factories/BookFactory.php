@@ -21,7 +21,7 @@ class BookFactory extends Factory
             'author' => fake()->name(),
 
             'isbn' => fake()->unique()->numerify('978##########'),
-            'published_date' => fake()->optional(0.5)->date(),
+            'published_date' => fake()->date(),
             'description' => fake()->optional(0.5)->realText(100),
             'image_url' => 'https://placehold.co/200x300/e2e8f0/475569?text='.urlencode(fake()->word()),
         ];

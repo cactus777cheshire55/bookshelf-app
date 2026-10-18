@@ -199,4 +199,19 @@ class ReviewControllerTest extends TestCase
         $this->delete("/reviews/{$review->id}")
             ->assertRedirect('/login');
     }
+
+    /** @test */
+    public function コメントが1000文字を超える場合はエラーになるか(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $response = $this->actingAs($user)->postJson("/books/{$book->id}/reviews", [
+            'rating' => 5,
+            'comment' => str_repeat('あ', 1001), // ★ 256文字 -> 1001文字に変更
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['comment']);
+    }
 }
