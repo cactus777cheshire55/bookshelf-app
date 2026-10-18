@@ -126,6 +126,8 @@ erDiagram
     genres ||--o{ book_genre : "belongs_to"
     reviews ||--o{ review_likes : "liked_by"
 
+```
+
 ## 開発環境URL
 
 http://localhost
