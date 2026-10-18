@@ -289,3 +289,5 @@ sail artisan test --coverage
 - DELETE:/api/v1/books/{book} 書籍を削除する
 
 - ポストマンでURLに http://localhost/api/v1/login postﾒｿｯﾄﾞ Body タブをrawにしてタイプを JSON に設定し { "email": "yamada@example.com", "password": "password" } で送信してtokenを出してからAuthorizationタブのauth typeをBearer Tokenにしてtokenに張り付ける
+
+- リマインダーテスト手動:./vendor/bin/sail artisan app:send-reading-plan-reminders実行
